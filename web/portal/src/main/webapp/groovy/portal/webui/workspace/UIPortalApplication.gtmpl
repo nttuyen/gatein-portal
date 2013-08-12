@@ -32,7 +32,13 @@
 	def metaInformation = rcontext.getMetaInformation();
 %>
 
+<!--[if IE 7]> <html class="ie7 lt-ie8 lt-ie9 lt-ie10"  xmlns="http://www.w3.org/1999/xhtml" xml:lang="$lang" lang="$lang" dir="$dir"> <![endif]-->
+<!--[if IE 8]> <html class="ie8 lt-ie9  lt-ie10"  xmlns="http://www.w3.org/1999/xhtml" xml:lang="$lang" lang="$lang" dir="$dir"> <![endif]-->
+<!--[if IE 9]> <html class="ie9 lt-ie10"  xmlns="http://www.w3.org/1999/xhtml" xml:lang="$lang" lang="$lang" dir="$dir"> <![endif]-->
+<!--[if IE 10]> <html class="ie10"  xmlns="http://www.w3.org/1999/xhtml" xml:lang="$lang" lang="$lang" dir="$dir"> <![endif]-->
+<!--[if gt IE 10]><!-->
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="$lang" lang="$lang" dir="$dir">
+<!-- <![endif]-->
 	<head id="head">
                 <% 
                       UIPortal portal = uicomponent.findFirstComponentOfType(UIPortal.class);

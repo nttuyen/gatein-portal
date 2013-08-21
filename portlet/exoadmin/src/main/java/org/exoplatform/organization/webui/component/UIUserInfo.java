@@ -19,6 +19,7 @@
 
 package org.exoplatform.organization.webui.component;
 
+import java.util.ResourceBundle;
 import org.exoplatform.commons.serialization.api.annotations.Serialized;
 import org.exoplatform.portal.Constants;
 import org.exoplatform.portal.application.PortalRequestContext;
@@ -31,6 +32,7 @@ import org.exoplatform.services.organization.UserProfile;
 import org.exoplatform.services.organization.UserProfileHandler;
 import org.exoplatform.services.resources.LocaleConfig;
 import org.exoplatform.services.resources.LocaleConfigService;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -133,6 +135,18 @@ public class UIUserInfo extends UIFormTabPane {
                 Util.getPortalRequestContext().addUIComponentToUpdateByAjax(
                         uiApp.findFirstComponentOfType(UIWorkingWorkspace.class));
                 Util.getPortalRequestContext().ignoreAJAXUpdateOnPortlets(true);
+
+                //Update change language for popup message
+                ResourceBundle bundle = Util.getPortalRequestContext().getApplication().getResourceBundle(localeConfig.getLocale());
+                for(AbstractApplicationMessage message : uiApp.getUIPopupMessages().getErrors()) {
+                    message.setResourceBundle(bundle);
+                }
+                for(AbstractApplicationMessage message : uiApp.getUIPopupMessages().getWarnings()) {
+                    message.setResourceBundle(bundle);
+                }
+                for(AbstractApplicationMessage message : uiApp.getUIPopupMessages().getInfos()) {
+                    message.setResourceBundle(bundle);
+                }
             }
 
             UIAccountEditInputSet accountInput = uiUserInfo.getChild(UIAccountEditInputSet.class);

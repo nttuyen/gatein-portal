@@ -191,6 +191,13 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             return null;
         }
 
+
+        User exoUser = getPopulatedUser(userName, session);
+
+        if (broadcast) {
+            preDelete(exoUser);
+        }
+
         try {
             // Remove all memberships and profile first
             orgService.getMembershipHandler().removeMembershipByUser(userName, false);
@@ -198,12 +205,6 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         } catch (Exception e) {
             handleException("Cannot cleanup user relationships: " + userName + "; ", e);
 
-        }
-
-        User exoUser = getPopulatedUser(userName, session);
-
-        if (broadcast) {
-            preDelete(exoUser);
         }
 
         try {

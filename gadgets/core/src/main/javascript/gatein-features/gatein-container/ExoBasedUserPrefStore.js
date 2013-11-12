@@ -19,6 +19,9 @@
 
 define("eXo.gadget.ExoBasedUserPrefStore", ["SHARED/jquery", "eXo.gadget.Gadgets"], function($, gadgets) {	
 gadgets.ExoBasedUserPrefStore = function() {
+  this._gadgetsPrefToSave = {};
+  this._gadgetsPrefSaving = {};
+  this._gadgetsPrefWaiting = {};
   gadgets.UserPrefStore.call(this);
 };
 
@@ -28,8 +31,37 @@ gadgets.ExoBasedUserPrefStore.prototype.getPrefs = function(gadget) {
   return gadget.userPrefs_;
 };
 
-gadgets.ExoBasedUserPrefStore.prototype.savePrefs = function(gadget, newPrefs)
+gadgets.ExoBasedUserPrefStore.prototype.savePrefs = function(gadget, newPrefs) {
+  var newPrefs = newPrefs || gadget.userPrefs_;
+  var $ggWindow = $("#gadget_" + gadget.id);
+  if($ggWindow.length > 0) {
+    if (!this._gadgetsPrefToSave[gadget.id]) {
+      this._gadgetsPrefToSave[gadget.id] = newPrefs;
+    } else {
+      var prefs = this._gadgetsPrefToSave[gadget.id];
+      for (var property in newPrefs) {
+        prefs[property] = newPrefs[property];
+      }
+    }
+
+    this._gadgetsPrefWaiting[gadget.id] = true;
+    if(!this._gadgetsPrefSaving[gadget.id]) {
+      this.savePrefs_(gadget);
+    }
+  }
+}
+
+gadgets.ExoBasedUserPrefStore.prototype.savePrefs_ = function(gadget)
 {
+  if(!this._gadgetsPrefWaiting[gadget.id] || this._gadgetsPrefSaving[gadget.id]) {
+    //Saving in progress or has no data wait to save
+    return;
+  }
+  this._gadgetsPrefWaiting[gadget.id] = false;
+  this._gadgetsPrefSaving[gadget.id] = true;
+  var newPrefs = this._gadgetsPrefToSave[gadget.id];
+  this._gadgetsPrefToSave[gadget.id] = {};
+
   var prefs = gadgets.json.stringify(newPrefs || gadget.userPrefs_);
   var encodedPrefs = encodeURIComponent(prefs);
   var ggWindow = $("#gadget_" + gadget.id);
@@ -42,23 +74,31 @@ gadgets.ExoBasedUserPrefStore.prototype.savePrefs = function(gadget, newPrefs)
       compID = gadgetPortlet.attr("id");
     }
     var portletFrag = ggWindow.closest(".PORTLET-FRAGMENT");
+    var href = "";
     if (portletFrag.length > 0)
     {
       var portletID = portletFrag.parent().attr("id");
-      var href = eXo.env.server.portalBaseURL + "?portal:componentId=" + portletID;
+      href = eXo.env.server.portalBaseURL + "?portal:componentId=" + portletID;
       href += "&portal:type=action&uicomponent=" + compID;
       href += "&op=SaveUserPref";
       href += "&ajaxRequest=true";
       href += "&userPref=" + encodedPrefs;
-      ajaxGet(href, true);
+      //ajaxGet(href, true);
     }
     else
     {
       var params = [
         {name : "userPref", value : prefs}
       ];
-      ajaxGet(eXo.env.server.createPortalURL(compID, "SaveUserPref", true, params), true);
+      href = eXo.env.server.createPortalURL(compID, "SaveUserPref", true, params);
+      //ajaxGet(eXo.env.server.createPortalURL(compID, "SaveUserPref", true, params), true);
     }
+
+    var _this = this;
+    ajaxGet(href, function(request) {
+      _this._gadgetsPrefSaving[gadget.id] = false;
+      _this.savePrefs_(gadget);
+    });
   }
 };
 

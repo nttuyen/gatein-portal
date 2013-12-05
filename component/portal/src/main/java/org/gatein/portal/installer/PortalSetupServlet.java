@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.component.ComponentRequestLifecycle;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.MembershipType;
 import org.exoplatform.services.organization.OrganizationService;
@@ -68,9 +70,11 @@ public class PortalSetupServlet extends HttpServlet {
                 request.setAttribute(SETUP_ERROR, "Passwords are not equal");
                 request.getRequestDispatcher(SETUP_JSP).forward(request, response);
             } else {
+                OrganizationService service = null;
                 try {
-                    OrganizationService service = (OrganizationService) ExoContainerContext.getCurrentContainer()
+                    service = ExoContainerContext.getCurrentContainer()
                             .getComponentInstanceOfType(OrganizationService.class);
+                    begin(service);
                     User root = service.getUserHandler().findUserByName("root", false);
                     // In the case the root user is not present
                     // This case can happens if organization-configuration.xml is not well configured
@@ -105,6 +109,14 @@ public class PortalSetupServlet extends HttpServlet {
                     log.error("Root user cannot be configured", e);
                     request.setAttribute(SETUP_ERROR, "Root user cannot be configured. See log for details.");
                     request.getRequestDispatcher(SETUP_JSP).forward(request, response);
+                } finally {
+                    try {
+                        if(service != null) {
+                            end(service);
+                        }
+                    } catch (Exception ex) {
+                        log.error("exception", ex);
+                    }
                 }
             }
         }
@@ -113,5 +125,17 @@ public class PortalSetupServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
+    }
+
+    public void begin(OrganizationService orgService) throws Exception {
+        if (orgService instanceof ComponentRequestLifecycle) {
+            RequestLifeCycle.begin((ComponentRequestLifecycle) orgService);
+        }
+    }
+
+    public void end(OrganizationService orgService) throws Exception {
+        if (orgService instanceof ComponentRequestLifecycle) {
+            RequestLifeCycle.end();
+        }
     }
 }

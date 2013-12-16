@@ -19,9 +19,11 @@
 
 package org.exoplatform.organization.webui.component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.exoplatform.commons.serialization.api.annotations.Serialized;
 import org.exoplatform.portal.config.UserACL;
@@ -31,11 +33,13 @@ import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.idm.PicketLinkIDMOrganizationServiceImpl;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.login.LogoutControl;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIApplication;
 import org.exoplatform.webui.core.UIComponent;
+import org.exoplatform.webui.core.UIConfirmation;
 import org.exoplatform.webui.core.UIGrid;
 import org.exoplatform.webui.core.UIPageIterator;
 import org.exoplatform.webui.core.UIPopupWindow;
@@ -54,6 +58,8 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
  */
 @ComponentConfig(lifecycle = UIContainerLifecycle.class, events = {
         @EventConfig(listeners = UIListUsers.DisableEnableUserActionListener.class),
+        @EventConfig(listeners = UIListUsers.ConfirmCloseActionListener.class),
+        @EventConfig(listeners = UIListUsers.AbortCloseActionListener.class),
         @EventConfig(listeners = UIListUsers.ShowDisabledUserActionListener.class),
         @EventConfig(listeners = UIListUsers.ViewUserInfoActionListener.class),
         @EventConfig(listeners = UIListUsers.SelectUserActionListener.class),
@@ -111,6 +117,10 @@ public class UIListUsers extends UISearch {
         grid_.configure(USER_NAME, USER_BEAN_FIELD, USER_ACTION);
         grid_.getUIPageIterator().setId("UIListUsersIterator");
         grid_.getUIPageIterator().setParent(this);
+
+        UIConfirmation uiConfirmation = addChild(UIConfirmation.class, null, null);
+        uiConfirmation.setCaller(this);
+        createActionConfirms(uiConfirmation);
     }
 
     /**
@@ -173,6 +183,51 @@ public class UIListUsers extends UISearch {
 
     @SuppressWarnings("unused")
     public void advancedSearch(UIFormInputSet advancedSearchInput) {
+    }
+
+    public void showConfirmWindow(String message) {
+        UIConfirmation uiConfirmation = getChild(UIConfirmation.class);
+        uiConfirmation.setMessage(message);
+        ((WebuiRequestContext) WebuiRequestContext.getCurrentInstance()).addUIComponentToUpdateByAjax(uiConfirmation);
+    }
+
+    public void createActionConfirms(UIConfirmation uiConfirmation) {
+        ResourceBundle resourceBundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
+        String yes = resourceBundle.getString("UIEditInlineWorkspace.confirm.yes");
+        String no = resourceBundle.getString("UIEditInlineWorkspace.confirm.no");
+
+        List<UIConfirmation.ActionConfirm> actionConfirms = new ArrayList<UIConfirmation.ActionConfirm>();
+        actionConfirms.add(new UIConfirmation.ActionConfirm("ConfirmClose", yes));
+        actionConfirms.add(new UIConfirmation.ActionConfirm("AbortClose", no));
+        uiConfirmation.setActions(actionConfirms);
+    }
+
+    private boolean executeDisableUser(Event<UIListUsers> event, String userName) throws Exception {
+        if(userName == null) {
+            return false;
+        }
+
+        UIListUsers uiListUser = event.getSource();
+        OrganizationService service = uiListUser.getApplicationComponent(OrganizationService.class);
+
+        User user = service.getUserHandler().findUserByName(userName, false);
+
+        if(user == null) {
+            UIApplication uiApp = event.getRequestContext().getUIApplication();
+            uiApp.addMessage(new ApplicationMessage("UIListUsers.msg.user-is-deleted", null, ApplicationMessage.WARNING));
+            return false;
+        }
+
+        UserACL userACL = uiListUser.getApplicationComponent(UserACL.class);
+        if (userACL.getSuperUser().equals(userName) && user.isEnabled()) {
+            UIApplication uiApp = event.getRequestContext().getUIApplication();
+            uiApp.addMessage(new ApplicationMessage("UIListUsers.msg.DisableSuperUser", new String[] { userName },
+                    ApplicationMessage.WARNING));
+            return false;
+        }
+
+        service.getUserHandler().setEnabled(userName, !user.isEnabled(), true);
+        return true;
     }
 
     public static class ViewUserInfoActionListener extends EventListener<UIListUsers> {
@@ -247,26 +302,16 @@ public class UIListUsers extends UISearch {
             String userName = event.getRequestContext().getRequestParameter(OBJECTID);
             OrganizationService service = uiListUser.getApplicationComponent(OrganizationService.class);
 
-            User user = service.getUserHandler().findUserByName(userName, false);
-            if(user == null) {
-                UIApplication uiApp = event.getRequestContext().getUIApplication();
-                uiApp.addMessage(new ApplicationMessage("UIListUsers.msg.user-is-deleted", null, ApplicationMessage.WARNING));
+            if(userName != null && userName.equals(event.getRequestContext().getRemoteUser())) {
+                //Need to confirm to disable current user
+                //Current user will be disable on confirmed
+                ResourceBundle resourceBundle = event.getRequestContext().getApplicationResourceBundle();
+                String disableMessage = resourceBundle.getString("UIListUsers.msg.DisableYourSelf");
+                uiListUser.showConfirmWindow(disableMessage);
                 return;
             }
 
-            UserACL userACL = uiListUser.getApplicationComponent(UserACL.class);
-            if (userACL.getSuperUser().equals(userName) && user.isEnabled()) {
-                UIApplication uiApp = event.getRequestContext().getUIApplication();
-                uiApp.addMessage(new ApplicationMessage("UIListUsers.msg.DisableSuperUser", new String[] { userName },
-                        ApplicationMessage.WARNING));
-                return;
-            }
-
-            if (user.isEnabled()) {
-                service.getUserHandler().setEnabled(userName, false, true);
-            } else {
-                service.getUserHandler().setEnabled(userName, true, true);
-            }
+            uiListUser.executeDisableUser(event, userName);
         }
     }
 
@@ -277,6 +322,36 @@ public class UIListUsers extends UISearch {
             UICheckBoxInput checkbox = (UICheckBoxInput) listUsers.getUISearchForm().getQuickSearchInputSet()
                     .getChildById("UIListUsers-" + SHOW_DISABLED_USER);
             enabledOnly = checkbox.isChecked() ? false : true;
+        }
+    }
+
+    public static class ConfirmCloseActionListener extends EventListener<UIListUsers> {
+
+        @Override
+        public void execute(Event<UIListUsers> event) throws Exception {
+            UIListUsers uiListUsers = event.getSource();
+
+            UIConfirmation uiConfirmation = uiListUsers.getChild(UIConfirmation.class);
+            uiConfirmation.createEvent("Close", event.getExecutionPhase(), event.getRequestContext()).broadcast();
+
+            //Disable current user
+            String userName = event.getRequestContext().getRemoteUser();
+            if(userName != null) {
+                if(uiListUsers.executeDisableUser(event, userName)) {
+                    LogoutControl.wantLogout();
+                }
+            }
+            UIComponent uiToUpdateAjax = uiListUsers.getAncestorOfType(UIUserManagement.class);
+            event.getRequestContext().addUIComponentToUpdateByAjax(uiToUpdateAjax);
+        }
+    }
+    public static class AbortCloseActionListener extends EventListener<UIListUsers> {
+
+        @Override
+        public void execute(Event<UIListUsers> event) throws Exception {
+            UIListUsers uiListUsers = event.getSource();
+            UIConfirmation uiConfirmation = uiListUsers.getChild(UIConfirmation.class);
+            uiConfirmation.createEvent("Close", event.getExecutionPhase(), event.getRequestContext()).broadcast();
         }
     }
 }

@@ -89,6 +89,8 @@ public class OAuthConstants {
 
     public static final String OAUTH_PROVIDER_KEY_GOOGLE = "GOOGLE";
 
+    public static final String OAUTH_PROVIDER_KEY_LINKEDIN = "LINKEDIN";
+
     // User profile attributes
 
     public static final String PROFILE_FACEBOOK_USERNAME = "user.social-info.facebook.userName";
@@ -112,6 +114,9 @@ public class OAuthConstants {
 
     public static final String PROFILE_TWITTER_ACCESS_TOKEN_SECRET = "user.social-info.twitter.accessTokenSecret";
 
+    public static final String PROFILE_LINKEDIN_ACCESS_TOKEN = "user.social-info.linkedin.accessToken";
+
+    public static final String PROFILE_LINKEDIN_ACCESS_TOKEN_SECRET = "user.social-info.linkedin.accessTokenSecret";
 
     // Session (or AuthenticationRegistry) attributes
 
@@ -130,6 +135,8 @@ public class OAuthConstants {
     public static final String ATTRIBUTE_EXCEPTION_AFTER_FAILED_LINK = "_oauthExceptionAfterFailedLink";
 
     public static final String ATTRIBUTE_TWITTER_REQUEST_TOKEN = "_twitterRequestToken";
+
+    public static final String ATTRIBUTE_LINKEDIN_REQUEST_TOKEN = "_linkedinRequestToken";
 
     public static final String ATTRIBUTE_AUTH_STATE = "_authState";
 

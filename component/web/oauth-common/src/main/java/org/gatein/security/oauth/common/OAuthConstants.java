@@ -142,6 +142,8 @@ public class OAuthConstants {
 
     public static final String ATTRIBUTE_VERIFICATION_STATE = "_verificationState";
 
+    public static final String ATTRIBUTE_REMEMBER_ME = "_rememberme";
+
     // URL
 
     public static final String FACEBOOK_AUTHENTICATION_URL_PATH = "/facebookAuth";
@@ -158,6 +160,8 @@ public class OAuthConstants {
     public static final String PARAM_CUSTOM_SCOPE = "_oauthCustomScope";
 
     public static final String PARAM_INITIAL_URI = "_initialURI";
+
+    public static final String PARAM_REMEMBER_ME = "_rememberme";
 
     public static final String PARAM_OAUTH_INTERACTION_VALUE_START = "start";
 

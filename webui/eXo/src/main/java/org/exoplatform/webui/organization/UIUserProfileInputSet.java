@@ -98,7 +98,13 @@ public class UIUserProfileInputSet extends UIFormInputSet {
         OAuthProviderTypeRegistry registry = getApplicationComponent(OAuthProviderTypeRegistry.class);
         if (registry.isOAuthEnabled()) {
             UIFormInputSet socialInputSet = new UIFormInputSet("SocialNetworksInfo");
-            addInput(socialInputSet, getSocialInfoKeys());
+            //addInput(socialInputSet, getSocialInfoKeys());
+            for(String socialKey : getSocialInfoKeys()) {
+                UIFormStringInput input = new UIFormStringInput(socialKey, null, null);
+                input.addValidator(StringLengthValidator.class, 0, maxLength);
+                input.setLabel(socialKey);
+                socialInputSet.addUIFormInput(input);
+            }
             socialInputSet.setRendered(false);
             addUIFormInput(socialInputSet);
         }

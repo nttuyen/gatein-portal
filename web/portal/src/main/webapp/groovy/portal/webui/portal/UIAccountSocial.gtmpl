@@ -29,7 +29,10 @@
 									    </td>
 									    <td class="FieldComponent portlet-input-field"><% uiform.renderField(field) %></td>
 								<%  } else { %>
-									    <td class="FieldComponent portlet-input-field" colspan="2"><% uiform.renderField(field) %>
+                                        <td class="FieldLabel portlet-form-label">
+                                            <%=oauthPrType.getFriendlyName() %>
+                                        </td>
+									    <td class="FieldComponent portlet-input-field"><% uiform.renderField(field) %>
 								<%  } %>
 
 								    <td class="FieldComponent UIAction portlet-input-field">

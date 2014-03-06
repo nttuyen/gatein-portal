@@ -36,6 +36,11 @@
   </component>
 
   <component>
+    <key>org.gatein.security.oauth.spi.OAuthPrincipalProcessor</key>
+    <type>org.gatein.security.oauth.principal.OAuthPrincipalProcessorImpl</type>
+  </component>
+
+  <component>
     <type>org.exoplatform.web.security.codec.CodecInitializer</type>
     <init-params>
       <value-param>
@@ -245,5 +250,33 @@
     </component-plugin>
   </external-component-plugins>
 
+  <external-component-plugins>
+    <target-component>org.gatein.security.oauth.spi.OAuthPrincipalProcessor</target-component>
+    <component-plugin>
+      <name>DefaultPrincipalProcessor</name>
+      <set-method>addPlugin</set-method>
+      <type>org.gatein.security.oauth.principal.DefaultPrincipalProcessorPlugin</type>
+      <init-params>
+        <value-param>
+          <name>providerKey</name>
+          <value>default</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+  <external-component-plugins>
+    <target-component>org.gatein.security.oauth.spi.OAuthPrincipalProcessor</target-component>
+    <component-plugin>
+      <name>LinkedInPrincipalProcessor</name>
+      <set-method>addPlugin</set-method>
+      <type>org.gatein.security.oauth.linkedin.LinkedInPrincipalProcessor</type>
+      <init-params>
+        <value-param>
+          <name>providerKey</name>
+          <value>LINKEDIN</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
 </configuration>
 

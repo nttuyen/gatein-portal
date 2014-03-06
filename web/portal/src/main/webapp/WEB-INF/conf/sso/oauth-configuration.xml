@@ -38,6 +38,11 @@
   </component>
 
   <component>
+    <key>org.gatein.security.oauth.spi.OAuthPrincipalProcessor</key>
+    <type>org.gatein.security.oauth.principal.OAuthPrincipalProcessorImpl</type>
+  </component>
+
+  <component>
     <key>org.gatein.security.oauth.facebook.GateInFacebookProcessor</key>
     <type>org.gatein.security.oauth.facebook.GateInFacebookProcessorImpl</type>
     <init-params>
@@ -161,6 +166,10 @@
       <type>org.gatein.security.oauth.webapi.OAuthFilterIntegratorPlugin</type>
       <init-params>
         <value-param>
+          <name>providerKey</name>
+          <value>FACEBOOK</value>
+        </value-param>
+        <value-param>
           <name>filterClass</name>
           <value>org.gatein.security.oauth.web.facebook.FacebookFilter</value>
         </value-param>
@@ -183,6 +192,10 @@
       <set-method>addPlugin</set-method>
       <type>org.gatein.security.oauth.webapi.OAuthFilterIntegratorPlugin</type>
       <init-params>
+        <value-param>
+          <name>providerKey</name>
+          <value>TWITTER</value>
+        </value-param>
         <value-param>
           <name>filterClass</name>
           <value>org.gatein.security.oauth.web.twitter.TwitterFilter</value>
@@ -207,6 +220,10 @@
       <type>org.gatein.security.oauth.webapi.OAuthFilterIntegratorPlugin</type>
       <init-params>
         <value-param>
+          <name>providerKey</name>
+          <value>GOOGLE</value>
+        </value-param>
+        <value-param>
           <name>filterClass</name>
           <value>org.gatein.security.oauth.web.google.GoogleFilter</value>
         </value-param>
@@ -229,6 +246,10 @@
       <set-method>addPlugin</set-method>
       <type>org.gatein.security.oauth.webapi.OAuthFilterIntegratorPlugin</type>
       <init-params>
+        <value-param>
+          <name>providerKey</name>
+          <value>LINKEDIN</value>
+        </value-param>
         <value-param>
           <name>filterClass</name>
           <value>org.gatein.security.oauth.web.linkedin.LinkedInFilter</value>
@@ -443,4 +464,32 @@
     </component-plugin>
   </external-component-plugins>
 
+  <external-component-plugins>
+    <target-component>org.gatein.security.oauth.spi.OAuthPrincipalProcessor</target-component>
+    <component-plugin>
+      <name>DefaultPrincipalProcessor</name>
+      <set-method>addPlugin</set-method>
+      <type>org.gatein.security.oauth.principal.DefaultPrincipalProcessorPlugin</type>
+      <init-params>
+        <value-param>
+          <name>providerKey</name>
+          <value>default</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+  <external-component-plugins>
+    <target-component>org.gatein.security.oauth.spi.OAuthPrincipalProcessor</target-component>
+    <component-plugin>
+      <name>LinkedInPrincipalProcessor</name>
+      <set-method>addPlugin</set-method>
+      <type>org.gatein.security.oauth.linkedin.LinkedInPrincipalProcessor</type>
+      <init-params>
+        <value-param>
+          <name>providerKey</name>
+          <value>LINKEDIN</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
 </configuration>

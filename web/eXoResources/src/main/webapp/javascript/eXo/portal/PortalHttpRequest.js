@@ -548,9 +548,13 @@
 		  $.each(blocksToUpdate, function() {
 	      var blockToUpdate = this;
 			  var target = parentBlock.find("#" + blockToUpdate.blockId);
-			  if(target.length == 0) alert(msg.getMessage("TargetBlockNotFound", new Array (blockToUpdate.blockId))) ;
+			  if(target.length == 0) {
+                console && console.error(msg.getMessage("TargetBlockNotFound", new Array (blockToUpdate.blockId)));
+              }
 			  var newData = $(blockToUpdate.data).find("#" + blockToUpdate.blockId);
-			  if(newData.length == 0) alert(msg.getMessage("BlockUpdateNotFound", new Array (blockToUpdate.blockId))) ;
+			  if(newData.length == 0) {
+                console && console.error(msg.getMessage("BlockUpdateNotFound", new Array (blockToUpdate.blockId)));
+              }
 	//		    target.parentNode.replaceChild(newData, target);
               try {
                 target.html(newData.html());

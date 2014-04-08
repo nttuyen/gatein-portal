@@ -36,7 +36,6 @@ import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
-import org.exoplatform.webui.form.validator.IdentifierValidator;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.StringLengthValidator;
 import org.exoplatform.webui.form.validator.UserConfigurableValidator;
@@ -56,7 +55,7 @@ public class UIGroupForm extends UIForm {
 
     public UIGroupForm() throws Exception {
         addUIFormInput(new UIFormStringInput(GROUP_NAME, GROUP_NAME, null).addValidator(MandatoryValidator.class)
-                .addValidator(StringLengthValidator.class, 3, 30).addValidator(IdentifierValidator.class));
+                .addValidator(UserConfigurableValidator.class, UserConfigurableValidator.GROUP_NAME));
         addUIFormInput(new UIFormStringInput(GROUP_LABEL, GROUP_LABEL, null).addValidator(StringLengthValidator.class, 3, 50)
                 .addValidator(UserConfigurableValidator.class, "grouplabel",
                         UserConfigurableValidator.KEY_PREFIX + "grouplabel", false));

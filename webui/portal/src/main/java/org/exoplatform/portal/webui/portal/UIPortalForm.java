@@ -67,10 +67,9 @@ import org.exoplatform.webui.form.UIFormInputSet;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTabPane;
-import org.exoplatform.webui.form.validator.IdentifierValidator;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
-import org.exoplatform.webui.form.validator.StringLengthValidator;
+import org.exoplatform.webui.form.validator.UserConfigurableValidator;
 import org.exoplatform.webui.organization.UIListPermissionSelector;
 import org.exoplatform.webui.organization.UIListPermissionSelector.EmptyIteratorValidator;
 import org.exoplatform.webui.organization.UIPermissionSelector;
@@ -214,7 +213,7 @@ public class UIPortalForm extends UIFormTabPane {
         UIFormInputSet uiSettingSet = new UIFormInputSet("PortalSetting");
         UIFormInputSet uiPropertiesSet = new UIFormInputSet("Properties");
         uiSettingSet.addUIFormInput(new UIFormStringInput(FIELD_NAME, FIELD_NAME, null).addValidator(MandatoryValidator.class)
-                .addValidator(StringLengthValidator.class, 3, 30).addValidator(IdentifierValidator.class).setReadOnly(true));
+                .addValidator(UserConfigurableValidator.class, UserConfigurableValidator.PORTAL_NAME).setReadOnly(true));
 
         uiSettingSet.addUIFormInput(new UIFormStringInput(FIELD_LABEL, FIELD_LABEL, null)
                 .addValidator(SpecialCharacterValidator.class));

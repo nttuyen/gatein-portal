@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,7 @@ import org.exoplatform.application.gadget.GadgetRegistryService;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.gadget.core.SecurityTokenGenerator;
 import org.exoplatform.portal.webui.util.Util;
 import org.gatein.common.logging.Logger;
@@ -115,12 +117,12 @@ public class GadgetUtil {
         String result = null;
 
         ExoContainer container = ExoContainerContext.getCurrentContainer();
-        GadgetRegistryService gadgetService = (GadgetRegistryService) container
-                .getComponentInstanceOfType(GadgetRegistryService.class);
+        PortalRequestContext context = Util.getPortalRequestContext();
+        Locale locale = context.getLocale();
         try {
             String data = "[{method:\"gadgets.metadata\", id:\"test\", params: {ids:[\"" + urlStr
-                    + "\"], container:\"default\", language:\"" + gadgetService.getLanguage() + "\", country:\""
-                    + gadgetService.getCountry() + "\", view:\"home\"}}]";
+                    + "\"], container:\"default\", language:\"" + locale.getLanguage() + "\", country:\""
+                    + locale.getCountry() + "\", view:\"home\"}}]";
 
             // Send data
             String gadgetServer = getGadgetServerUrl();

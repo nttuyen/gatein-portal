@@ -19,6 +19,7 @@
 
 package org.exoplatform.portal.webui.application;
 
+import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
@@ -75,6 +76,7 @@ public class UIGadget extends UIComponent {
     private Properties properties_;
 
     private JSONObject metadata_;
+    private String language;
 
     private String url_;
 
@@ -233,8 +235,9 @@ public class UIGadget extends UIComponent {
      */
     public String getRpcMetadata() {
         try {
-            if (metadata_ == null) {
+            if (metadata_ == null || isLanguageChanged()) {
                 metadata_ = fetchRpcMetadata();
+                language = Util.getPortalRequestContext().getLocale().getLanguage();
             }
             String token = GadgetUtil.createToken(this.getUrl(), new Random().nextLong());
             metadata_.put("secureToken", token);
@@ -293,8 +296,9 @@ public class UIGadget extends UIComponent {
                 throw new Exception();
             }
 
-            if (metadata_ == null) {
+            if (metadata_ == null || isLanguageChanged()) {
                 metadata_ = fetchRpcMetadata();
+                this.language = Util.getPortalRequestContext().getLocale().getLanguage();
             }
 
             if (metadata_ == null || metadata_.has(METADATA_ERROR)) {
@@ -362,6 +366,11 @@ public class UIGadget extends UIComponent {
         DataStorage service = getApplicationComponent(DataStorage.class);
         org.exoplatform.portal.pom.spi.gadget.Gadget pp = service.load(state, ApplicationType.GADGET);
         return pp != null ? pp.getUserPref() : null;
+    }
+
+    private boolean isLanguageChanged() {
+        Locale currentLocale = Util.getPortalRequestContext().getLocale();
+        return !currentLocale.getLanguage().equals(this.language);
     }
 
     public void addUserPref(String addedUserPref) throws Exception {

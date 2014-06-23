@@ -48,6 +48,8 @@ public class UIListMembershipType extends UIContainer {
 
     private static String[] USER_ACTION = { "EditMembership", "DeleteMembership" };
 
+    private boolean needReloadData = true;
+
     public UIListMembershipType() throws Exception {
         UIGrid uiGrid = addChild(UIGrid.class, null, "UIGrid");
         uiGrid.configure("name", USER_BEAN_FIELD, USER_ACTION);
@@ -65,14 +67,19 @@ public class UIListMembershipType extends UIContainer {
 
     @SuppressWarnings("unchecked")
     public void loadData() {
-        getChild(UIGrid.class).getUIPageIterator().setPageList(new FindMembershipTypesPageList(5));
+        if(needReloadData) {
+            getChild(UIGrid.class).getUIPageIterator().setPageList(new FindMembershipTypesPageList(5));
+            needReloadData = false;
+        }
     }
 
     public void processRender(WebuiRequestContext context) throws Exception {
+        loadData();
         Writer w = context.getWriter();
         w.write("<div class=\"UIListMembershipType\">");
         renderChildren();
         w.write("</div>");
+        needReloadData = true;
     }
 
     public static class EditMembershipActionListener extends EventListener<UIListMembershipType> {
@@ -82,17 +89,20 @@ public class UIListMembershipType extends UIContainer {
 
             OrganizationService service = uiMembership.getApplicationComponent(OrganizationService.class);
             MembershipType mt = service.getMembershipTypeHandler().findMembershipType(name);
+
+            if (mt == null) {
+                UIApplication uiApp = event.getRequestContext().getUIApplication();
+                uiApp.addMessage(new ApplicationMessage("UIMembershipTypeForm.msg.MembershipNotExist", new String[] { name }));
+                uiMembership.loadData();
+                return;
+            }
+
             if (mt.getDescription() == null) {
                 mt.setDescription("");
             }
             UIMembershipManagement uiMembershipManager = uiMembership.getParent();
             UIMembershipTypeForm uiForm = uiMembershipManager.getChild(UIMembershipTypeForm.class);
             uiForm.setMembershipType(mt);
-            if (mt == null) {
-                UIApplication uiApp = event.getRequestContext().getUIApplication();
-                uiApp.addMessage(new ApplicationMessage("UIMembershipTypeForm.msg.MembershipNotExist", new String[] { name }));
-                uiMembership.loadData();
-            }
         }
     }
 

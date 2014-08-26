@@ -32,7 +32,6 @@ import org.exoplatform.web.controller.router.RouterConfigException;
  * @version $Revision$
  */
 public class TestSkinService extends AbstractSkinServiceTest {
-    private static boolean isFirstStartup = true;
 
     boolean isDevelopingMode() {
         return false;
@@ -40,7 +39,7 @@ public class TestSkinService extends AbstractSkinServiceTest {
 
     @Override
     boolean setUpTestEnvironment() {
-        return isFirstStartup;
+        return true;
     }
 
     Router getRouter() {
@@ -61,7 +60,6 @@ public class TestSkinService extends AbstractSkinServiceTest {
 
     @Override
     void touchSetUp() {
-        isFirstStartup = false;
     }
 
     public void testRenderURL() {

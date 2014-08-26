@@ -40,6 +40,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -103,6 +104,27 @@ public abstract class AbstractSkinServiceTest extends AbstractKernelTest {
 
     protected void tearDown() throws Exception {
         resResolver.reset();
+        //. Remove all skins
+        final List<SkinKey> keys = new LinkedList<SkinKey>();
+        SkinVisitor visitor = new SkinVisitor() {
+            @Override
+            public void visitPortalSkin(Entry<SkinKey, SkinConfig> entry) {
+                keys.add(entry.getKey());
+            }
+
+            @Override
+            public void visitSkin(Entry<SkinKey, SkinConfig> entry) {
+                keys.add(entry.getKey());
+            }
+
+            @Override
+            public Collection<SkinConfig> getSkins() {
+                return null;
+            }
+        };
+        skinService.findSkins(visitor);
+        skinService.removeSkins(keys);
+
         skinService.reloadSkins();
     }
 

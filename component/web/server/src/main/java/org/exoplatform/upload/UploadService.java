@@ -50,6 +50,11 @@ public class UploadService {
     /** . */
     private static final Logger log = LoggerFactory.getLogger(UploadService.class);
 
+    /**
+     * These are list ascii-codes of special characters. We should not enable these characters in fileName.
+     * They are control codes - that can not printable (from 0 to 31) or special characters like: *, <, >, \, /, :, ?, ", etc.
+     * For mor details about ascii-code please see at: http://www.ascii-code.com/
+     */
     private static final int[] illegalChars = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 34, 42, 47, 58, 60, 62, 63, 92, 124};
 
     private List<MimeTypeUploadPlugin> plugins;

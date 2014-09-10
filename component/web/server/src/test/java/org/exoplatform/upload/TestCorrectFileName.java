@@ -25,7 +25,6 @@ import org.exoplatform.component.test.AbstractKernelTest;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
 import org.exoplatform.component.test.ContainerScope;
-import org.exoplatform.upload.UploadService;
 import org.junit.Test;
 
 @ConfiguredBy({
@@ -48,65 +47,65 @@ public class TestCorrectFileName extends AbstractKernelTest {
         fileName = "test_abcdef0123456789.ext";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test_abcdef0123456789.ext", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test~`!@#$%^&*()-=+_.ext";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test~`!@#$%^&_()-=+_.ext", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test[]{}\\|.ext";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test[]{}__.ext", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test;:\"'.ext";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test;__'.ext", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test_tên tiếng việt.mở rộng";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test_tên tiếng việt.mở rộng", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test_越南人的名字。扩展";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test_越南人的名字。扩展", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test_В'єтнамські імена. розширення";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test_В'єтнамські імена. розширення", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test_베트남어 이름. 확장";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test_베트남어 이름. 확장", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test_वियतनामी नामों. विस्तार";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test_वियतनामी नामों. विस्तार", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test_ベトナム語名。拡大";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test_ベトナム語名。拡大", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test_ਵੀਅਤਨਾਮੀ ਨਾਮ. ਵਿਸਤਾਰ";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test_ਵੀਅਤਨਾਮੀ ਨਾਮ. ਵਿਸਤਾਰ", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
 
         fileName = "test_Вьетнамские имена. расширение";
         fileName = uploadService.correctFileName(fileName);
         assertEquals("test_Вьетнамские имена. расширение", fileName);
-        checkFileName(fileName);
+        assertFileCreation(fileName);
     }
 
-    private void checkFileName(String fileName) {
+    private void assertFileCreation(String fileName) {
         String file = tmpDir + File.separator + fileName;
         File f = new File(file);
         f.deleteOnExit();

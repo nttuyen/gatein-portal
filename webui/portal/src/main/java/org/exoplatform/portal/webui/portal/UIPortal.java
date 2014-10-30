@@ -58,6 +58,8 @@ import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
 import org.gatein.web.security.impersonation.ImpersonatedIdentity;
 import org.gatein.web.security.impersonation.ImpersonationUtils;
 
@@ -330,6 +332,7 @@ public class UIPortal extends UIContainer {
     }
 
     public static class LogoutActionListener extends EventListener<UIComponent> {
+        private static final Logger log = LoggerFactory.getLogger(LogoutActionListener.class);
         public void execute(Event<UIComponent> event) throws Exception {
             PortalRequestContext prContext = Util.getPortalRequestContext();
             HttpServletRequest req = prContext.getRequest();
@@ -347,13 +350,25 @@ public class UIPortal extends UIContainer {
             // Delete the token from JCR
             String token = getTokenCookie(req);
             if (token != null) {
-                AbstractTokenService<GateInToken, String> tokenService = AbstractTokenService.getInstance(CookieTokenService.class);
-                tokenService.deleteToken(token);
+                try {
+                    AbstractTokenService<GateInToken, String> tokenService = AbstractTokenService.getInstance(CookieTokenService.class);
+                    tokenService.deleteToken(token);
+                } catch (Exception ex) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Exception when try to remove cookieToken", ex);
+                    }
+                }
             }
             token = LoginServlet.getOauthRememberMeTokenCookie(req);
             if(token != null) {
-                AbstractTokenService<GateInToken, String> tokenService = AbstractTokenService.getInstance(CookieTokenService.class);
-                tokenService.deleteToken(token);
+                try {
+                    AbstractTokenService<GateInToken, String> tokenService = AbstractTokenService.getInstance(CookieTokenService.class);
+                    tokenService.deleteToken(token);
+                } catch (Exception ex) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Exception when try to remove oauthCookieToken", ex);
+                    }
+                }
             }
 
             LogoutControl.wantLogout();

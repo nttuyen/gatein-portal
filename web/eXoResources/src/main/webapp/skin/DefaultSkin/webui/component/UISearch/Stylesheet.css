@@ -102,6 +102,13 @@
     margin-right: 5px;
 }
 
+.UISearch .UISearchForm .QuickSet label {
+    float: left; /* orientation=lt */
+    float: right; /* orientation=rt */
+    margin: -9px 5px 0;
+    color: #333;
+}
+
 .UISearch .UISearchForm .QuickSet input {
 	float: left; /* orientation=lt */
 	float: right; /* orientation=rt */
@@ -133,6 +140,13 @@
 	padding-right: 4px; /* orientation=rt */
 	border: 1px solid #b7b7b7;
 	width: 120px; 
+}
+
+.UIFormTabPane .UISearch .UISearchForm .QuickSet label {
+    float: left; /* orientation=lt */
+    float: right; /* orientation=rt */
+    margin: -9px 5px 0;
+    color: #333;
 }
 
 .UIFormTabPane .UISearch .UISearchForm .QuickSet input {

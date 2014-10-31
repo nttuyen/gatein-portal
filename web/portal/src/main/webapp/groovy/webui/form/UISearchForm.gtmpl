@@ -26,7 +26,13 @@
 								<% 
 									QuickSearchInputSet = uiform.getQuickSearchInputSet();
 									for(field in QuickSearchInputSet.getChildren()) {
-										uiform.renderField(field) 
+									    def label = uiform.getLabel(field);
+									    if(label != null && label != "") {
+									        %>
+									        <label for="<%=field.getId()%>"><%=label%></label>
+									        <%
+									    }
+										uiform.renderField(field)
 									}	 
 								%>
 								<a class="SimpleSearchIcon" href="javascript:void(0);" onclick="$quickSearchlink" title="<%= _ctx.appRes("UISearch.label.QuickSearch") %>">

@@ -6358,6 +6358,13 @@ background: url('/eXoResources/skin/DefaultSkin/webui/component/UIPageIterator/b
 	font-size: 11px;
 }
 
+.UISearch .UISearchForm .QuickSet label {
+    float: left; /* orientation=lt */
+    float: right; /* orientation=rt */
+    margin: -9px 5px 0;
+    color: #333;
+}
+
 .UISearch .UISearchForm .QuickSet input {
 	float: left; /* orientation=lt */
 	margin: 0px 5px 0px 10px; /* orientation=lt */ 
@@ -6372,6 +6379,13 @@ background: url('/eXoResources/skin/DefaultSkin/webui/component/UIPageIterator/b
 	padding-left: 4px; /* orientation=lt */
 	border: 1px solid #b7b7b7;
 	width: 120px; 
+}
+
+.UIFormTabPane .UISearch .UISearchForm .QuickSet label {
+    float: left; /* orientation=lt */
+    float: right; /* orientation=rt */
+    margin: -9px 5px 0;
+    color: #333;
 }
 
 .UIFormTabPane .UISearch .UISearchForm .QuickSet input {

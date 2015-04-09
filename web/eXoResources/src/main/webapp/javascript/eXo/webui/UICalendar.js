@@ -68,6 +68,12 @@
 	    }
 	    field.parentNode.insertBefore(cld, field);
 	  },
+
+      triggerChangeEvent: function() {
+        if(this.dateField) {
+          $(this.dateField).change();
+        }
+      },
 	
 	  create : function() {
 	    var clndr = document.createElement("div");
@@ -398,6 +404,7 @@
 	        dateString = dateString.replace("ss", second);
 	      }
 	      this.dateField.value = dateString;
+          this.triggerChangeEvent();
 	      this.hide();
 	    }
 	    return;
@@ -462,6 +469,7 @@
 	      this.currentMonth = this.currentDate.getMonth() + 1;
 	      this.currentYear = this.currentDate.getFullYear();
 	      this.dateField.value = this.getDateTimeString();
+          this.triggerChangeEvent();
 	    }
 	    return;
 	  },
@@ -482,6 +490,7 @@
 	      this.currentMonth = this.currentDate.getMonth() + 1;
 	      this.currentYear = this.currentDate.getFullYear();
 	      this.dateField.value = this.getDateTimeString();
+          this.triggerChangeEvent();
 	    }
 	    return;
 	  },
@@ -502,12 +511,14 @@
 	      this.currentMonth = this.currentDate.getMonth() + 1;
 	      this.currentYear = this.currentDate.getFullYear();
 	      this.dateField.value = this.getDateTimeString();
+          this.triggerChangeEvent();
 	    }
 	    return;
 	  },
 	
 	  clearDate : function() {
 	    this.dateField.value = '';
+        this.triggerChangeEvent();
 	    this.hide();
 	  },
 	
